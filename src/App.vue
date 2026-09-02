@@ -25,8 +25,17 @@
         celular : ''
     }
 
+   function buscar(){
+        let resultado = alumnos.find(estudiante => estudiante.id == alumno.id)
+        return resultado
+   }
+  
  function guardar(){
-    alumnos.push({...alumno})
+   if (buscar() != undefined){
+     alert('El alumno ya se encuentra registrado')
+     return
+   }
+     alumnos.push({...alumno})
     limpiar()
  }
  function limpiar(){
