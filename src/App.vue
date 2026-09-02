@@ -1,20 +1,10 @@
 <script setup>
    import {ref, reactive} from 'vue'
-   const asignatura = reactive([
-    {
-      id : '01',
-      nombre : 'Matemáticas'
-    },
-    {
-      id : '02',
-      nombre : 'Español'
-    },
-    {
-      id : '03',
-      nombre : 'Sociales'
-    },
-
-   ])
+   const asignaturas = reactive([])
+    const materia = {
+        id : '',
+        nombre : '',
+        }
 
     const alumnos = reactive([])
     const alumno = {
@@ -30,6 +20,26 @@
         return resultado
    }
   
+function buscarasignatura(){
+        let resultado = asignaturas.find(asignatura => asignatura.id == materia.id)
+        return resultado
+   }
+
+   function guardarasignatura(){
+   if (buscarasignatura() != undefined){
+     alert('La asignatura ya se encuentra registrada')
+     return
+   }
+     asignaturas.push({...materia})
+    limpiarasignatura()
+     alert('Registro exitoso...')
+ }  
+
+ function limpiarasignatura(){
+   materia.id = '',
+   materia.nombre = ''
+ }
+
  function guardar(){
    if (buscar() != undefined){
      alert('El alumno ya se encuentra registrado')
@@ -37,6 +47,7 @@
    }
      alumnos.push({...alumno})
     limpiar()
+     alert('Registro exitoso...')
  }
  function limpiar(){
    alumno.id = '',
@@ -50,6 +61,7 @@
 <template>
   <div>
  
+
   <nav class=" container navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Navbar</a>
@@ -66,6 +78,16 @@
             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal2">Listado alumno</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Asignatura
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalasignatura">Ingresar</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modallistadoasignatura">Listar asignaturas</a></li>
+            
           </ul>
         </li>
        
@@ -150,6 +172,63 @@
   </div>
 </div>
 <!--FIN VENTAN DE REGISTRO ALUMNO !-->
+
+  <!--VENTAN DE REGISTRO ASIGNATURA !-->
+  <div class="modal fade" id="modalasignatura" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">REGISTRO DE ASIGNATURA</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="floatingInput" placeholder="Id Asignatura" v-model="materia.id">
+            <label for="floatingInput">Id Asignatura</label>
+          </div>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="floatingPassword" placeholder="Nombre Asignatura" v-model="materia.nombre">
+          <label for="floatingPassword">Nombre Asignatura</label>
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" @click="guardarasignatura">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--VENTAN LISTADO Asignatura !-->
+  <div class="modal fade" id="modallistadoasignatura" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">LISTADO DE ASIGNATURAS</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="tabla table table-dark table-hover">
+           <thead>
+             <th>ID ASIGNATURA</th>
+             <th>NOMBRE</th>
+           </thead>
+           <tbody>
+             <tr v-for="asignatura in asignaturas" :key="asignatura.id">
+               <td>{{ asignatura.id }}</td>
+               <td>{{ asignatura.nombre }}</td>
+             </tr>
+           </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" @click="guardar">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 
 </template>
