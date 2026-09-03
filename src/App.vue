@@ -1,25 +1,57 @@
 <script setup>
-   import {ref, reactive} from 'vue'
+   import {ref, reactive, computed} from 'vue'
+    const calificaciones = reactive([])
+    const notas = reactive({
+        id_estudiante : '',
+        id_materia : '',
+        nota1 : 0,
+        nota2 : 0,
+        nota3 : 0,
+        promedio : 0
+    })
+
+    let notalumnos = reactive([])
+    notalumnos  = computed(() => {
+     return calificaciones.filter(nota => nota.id_materia == notas.id_materia)
+})
+
+    notas.promedio = computed(() => {
+    return (notas.nota1 + notas.nota2 + notas.nota3) / 3
+})
+
    const asignaturas = reactive([])
-    const materia = {
+    const materia = reactive({
         id : '',
-        nombre : '',
-        }
+        nombre : '',  
+        })
 
     const alumnos = reactive([])
-    const alumno = {
+    const alumno = reactive({
         id : '',
         nombre : '',
         apellido : '',
         edad : '',
         celular : ''
-    }
+    })
+
+   function limpiarnotas(){
+        notas.nota1 = 0
+        notas.nota2 = 0
+        notas.nota3 = 0
+   }
 
    function buscar(){
         let resultado = alumnos.find(estudiante => estudiante.id == alumno.id)
         return resultado
    }
   
+ function guardarcalificacion(){
+    
+     calificaciones.push({...notas})
+    limpiarnotas()
+     alert('Registro exitoso...')
+ }
+
 function buscarasignatura(){
         let resultado = asignaturas.find(asignatura => asignatura.id == materia.id)
         return resultado
@@ -60,7 +92,9 @@ function buscarasignatura(){
 
 <template>
   <div>
- 
+  {{ notas }}
+  {{ notalumnos }}
+  
 
   <nav class=" container navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
@@ -87,6 +121,16 @@ function buscarasignatura(){
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalasignatura">Ingresar</a></li>
             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modallistadoasignatura">Listar asignaturas</a></li>
+            
+          </ul>
+        </li>
+         <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Calificaciones
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalaNotas">Ingresar</a></li>
+            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modallistadocalificaciones">Listar calificaciones</a></li>
             
           </ul>
         </li>
@@ -229,6 +273,73 @@ function buscarasignatura(){
     </div>
   </div>
 </div>
+ <!--VENTAN DE REGISTRO NOTAS !-->
+  <div class="modal fade" id="modalaNotas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog ventananotas">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">REGISTRO DE NOTAS</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="form-floating mb-3">
+            <select @change="limpiarnotas" class="form-select" aria-label="Default select example" v-model="notas.id_materia">
+               <option v-for="data in asignaturas" :value="data.id">{{ data.nombre }}</option>
+          </select>
+           <select @change="limpiarnotas" class="form-select" aria-label="Default select example" v-model="notas.id_estudiante">
+               <option v-for="data in alumnos" :value="data.id">{{ data.nombre + " " + data.apellido  }} </option>
+          </select>
+         </div> 
+          
+        <table class="tabla table table-dark table-hover">
+           <thead>
+            
+              <th>NOTA 1</th>
+              <th>NOTA 2</th>
+              <th>NOTA3</th>
+           </thead>
+           <tbody>
+             <tr >
+               <td><input type="number" v-model="notas.nota1" class="form-control"></td>
+               <td><input type="number" v-model="notas.nota2" class="form-control"></td>
+               <td><input type="number" v-model="notas.nota3" class="form-control"></td>
+             </tr>
+           </tbody>
+        </table>
+       <div class="form-floating mb-3">
+         <h3>Listado</h3>
+         <table class="tabla table table-dark table-hover">
+           <thead>
+            <th>Id Estudiante</th>
+              <th>Id Materia</th>
+              <th>NOTA 1</th>
+              <th>NOTA 2</th>
+              <th>NOTA 3</th>
+           </thead>
+           <tbody>
+             <tr v-for="data in notalumnos" :key="data.id_estudiante">
+               <td>{{ data.id_estudiante }}</td>
+               <td>{{ data.id_materia }}</td>
+               <td>{{ data.nota1 }}</td>
+               <td>{{ data.nota2 }}</td>
+               <td>{{ data.nota3 }}</td>
+             
+             </tr>
+           </tbody>
+        </table>
+       </div>
+           
+          
+       
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" @click="guardarcalificacion">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 
 </template>
@@ -237,6 +348,11 @@ function buscarasignatura(){
    .titulo{
      height: 100px;
      font-weight: bold;
+   }
+
+   .ventananotas{
+     width: 500px;
+     
    }
 
    .tabla{
